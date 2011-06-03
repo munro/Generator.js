@@ -1,6 +1,5 @@
 /* vim: ts=4 sw=4 sts=4 et:
  *
- * Generator.js written by Ryan Munro.
  * Copyright 2011 Ryan Munro.
  * http://github.com/munro/
  *
@@ -93,17 +92,17 @@ var Generator = (function () {
         this._generator.apply(this, [function (value) {
             callback.apply(obj, [value, key, self]);
             key += 1;
+            return true;
         }]);
     };
 
-    // This kind of sucks, I can't halt the generator in mid execution
+    // This function will return false on the emit function to stop execution
     Generator.prototype.every = function (callback, obj) {
         var self = this, key = 0, ret = true;
         this._generator.apply(this, [function (value) {
-            if (ret && !callback.apply(obj, [value, key, self])) {
-                ret = false;
-                key += 1;
-            }
+            key += 1;
+            // And the JavaScript award of the day goes to:
+            return (ret = (ret && callback.apply(obj, [value, key, self])));
         }]);
         return ret;
     };
@@ -113,19 +112,18 @@ var Generator = (function () {
         var self = this;
         return new Generator(function (emit) {
             self.forEach(function (value, key, gen) {
-                emit(callback.apply(obj, [value, key, gen]));
+                return emit(callback.apply(obj, [value, key, gen]));
             });
         });
     };
 
-    // Another function that sucks because I can't halt mid execution
+    // This function will return false on the emit function to stop execution
     Generator.prototype.some = function (callback, obj) {
         var self = this, key = 0, ret = false;
         this._generator.apply(this, [function (value) {
-            if (!ret && callback.apply(obj, [value, key, self])) {
-                ret = true;
-                key += 1;
-            }
+            key += 1;
+            // Deal with it
+            return !(ret = (!ret && callback.apply(obj, [value, key, self])));
         }]);
         return ret;
     };
