@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<!-- vim: ts=4 sw=4 sts=4 et:
+  -->
+<html>
+<head>
+<script src="Generator.js"></script>
+<script>
+function log(str) {
+    if (console && log) {
+        console.log(str);
+    }
+    document.write('<pre>' + str + '</pre>');
+}
+
+// Examples
+function range(min, max) {
+    return new Generator(function (yield) {
+        for (var i = min; i <= max; i += 1) {
+            yield(i);
+        }
+    });
+}
+
+var foo = range(4, 8);
+
+foo.forEach(function (value, key) {
+    log(key + ': ' + value);
+});
+
+foo.filter(function (value, key) {
+    return (value % 2 == 0);
+}).forEach(function (value, key) {
+    log(key + ': ' + value);
+});
+
+log('every: ' + foo.every(function (value, key) {
+        return value <= 8;
+    }));
+
+foo.map(function (value, key) {
+    return 'mapping ' + value;
+}).forEach(function (value, key) {
+    log(key + ': ' + value);
+});
+
+log('some: ' + foo.some(function (value, key) {
+          return value === 4;
+      }));
+
+log('reduce: ' + foo.reduce(function (previousValue, currentValue, key) {
+          return previousValue + currentValue;
+      }, 1));
+
+log('map/reduce: ' + foo.map(function (value, key) {
+          return value * 2;
+      }).reduce(function (previousValue, currentValue, key) {
+          return previousValue + currentValue;
+      }, 1));
+
+
+foo.push('one');
+foo.push('two');
+foo.push('thre');
+</script>
+</head>
+<body>
+</body>
+</html>
